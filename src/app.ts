@@ -1,16 +1,45 @@
-import { config } from "dotenv";
-import express from "express";
-import router from "./routes/health.router";
+import { config } from 'dotenv';
+import express from 'express';
+import router from './routes/health.router';
+import todosRouter from './routes/todos.router';
 
-config()
+config();
 
 function buildApp() {
+  const app = express();
+  app.use(express.json());
 
-    const app= express();
-    app.use(express.json());
+  app.use('/health', router);
+  app.use('/todos', todosRouter);
 
-    app.use('/health', router);
+  app.use((req, res) => {
+    res.status(404).json({
+      status: 'Not found',
+    });
+  });
 
-    return app;
+  app.use((err: unknown, _req: express.Request, res: express.Response) => {
+    
+    console.error(err);
+
+    if (err instanceof Error) {
+      return res.status(500).json({
+        status: 'Internal Server Error',
+        message: err.message,
+      });
+    } else if (typeof err == 'string') {
+        return res.status(500).json({
+            status: 'Internal Server Error',
+            message: err,
+        });
+    } else {
+        res.status(500).json({
+            status: 'Error',
+            massege: 'Internal Server Error',
+        });
+    }
+  }); 
+
+  return app;
 }
 export default buildApp;
