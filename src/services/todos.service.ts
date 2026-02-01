@@ -1,3 +1,4 @@
+import { create } from "node:domain";
 import {Todo, Todos} from "../types/todo.type";
 
 const store = new Map<Todo['id'], Todo>();
@@ -17,7 +18,28 @@ function createTodo(title: Todo['title']): Todo{
     return todo;
 }
 
+function getTodoById(id: number): Todo | undefined {
+    return store.get(id);
+}
+
+function updateTodo(id: number, updates: Partial<Omit<Todo, 'id'>>): Todo | undefined {
+    const todo = store.get(id);
+    if (todo) {
+        const updatedTodo = { ...todo, ...updates };
+        store.set(id, updatedTodo);
+        return updatedTodo;
+    }
+    return undefined;
+}
+
+function deleteTodo(id: number): boolean {
+   return store.delete(id);
+}
+
 export {
     listTodos,
-    createTodo
+    createTodo,
+    getTodoById,
+    updateTodo,
+    deleteTodo
 };
