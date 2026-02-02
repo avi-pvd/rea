@@ -123,7 +123,7 @@ router.patch('/:id', (req, res) => {
 
     const todo = createTodo(title);
 
-    res.status(201).json({
+    res.status(200).json({
         item: todo,
         messege: 'Todo created',
     });
